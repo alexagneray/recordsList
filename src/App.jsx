@@ -1,11 +1,16 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+// import reactLogo from "./assets/react.svg";
+// import viteLogo from "/vite.svg";
 import "./App.css";
 
 export default function App() {
   const [records, setRecords] = useState([]);
+  const [sort, setSort] = useState("input");
 
+  function handleSortChange(sort) {
+    console.log(sort);
+    setSort(sort);
+  }
   function handleAddRecord(artist, album) {
     setRecords(() => [
       ...records,
@@ -28,15 +33,28 @@ export default function App() {
       )
     );
   }
+
+  function handleClear() {
+    if (confirm("Are you sure you want to cllear the list ?")) setRecords([]);
+  }
   return (
     <div className="app">
-      <header>record's list</header>
+      <header>record&apos;s list</header>
       <RecordForm onAddRecord={handleAddRecord} />
       <RecordList
         records={records}
         onRemoveRecord={handleRemoveRecord}
         onCheckRecord={handleCheckRecord}
+        sort={sort}
       />
+      {records.length ? (
+        <ListTools
+          onSortChange={handleSortChange}
+          onClear={handleClear}
+          sort={sort}
+        />
+      ) : null}
+
       <Stats records={records} />
     </div>
   );
@@ -73,10 +91,23 @@ function RecordForm({ onAddRecord }) {
   );
 }
 
-function RecordList({ records, onRemoveRecord, onCheckRecord }) {
+function RecordList({ records, onRemoveRecord, onCheckRecord, sort }) {
+  let sortRecords;
+
+  if (sort === "input") {
+    sortRecords = records.slice();
+  } else if (sort === "album") {
+    sortRecords = records
+      .slice()
+      .sort((a, b) => a.album.localeCompare(b.album));
+  } else if (sort === "check") {
+    sortRecords = records
+      .slice()
+      .sort((a, b) => Number(a.checked) - Number(b.checked));
+  }
   return (
     <div className="recordList">
-      {records.map((r) => (
+      {sortRecords.map((r) => (
         <RecordElement
           record={r}
           key={r}
@@ -110,6 +141,22 @@ function RecordElement({ record, onRemoveRecord, onCheckRecord }) {
   );
 }
 
+function ListTools({ onSortChange, onClear, sort }) {
+  return (
+    <div
+      className="listTools"
+      value={sort}
+      onChange={(e) => onSortChange(e.target.value)}
+    >
+      <select>
+        <option value="input">Sort by input</option>
+        <option value="album">Sort by album name</option>
+        <option value="check">Sort by check</option>
+      </select>
+      <button onClick={onClear}>Clear</button>
+    </div>
+  );
+}
 function Stats({ records }) {
   const total = records.length;
   const countChecked = records.filter((r) => r.checked).length;
