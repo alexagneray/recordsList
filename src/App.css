@@ -1,0 +1,26 @@
+.root {
+  text-align: center;
+}
+
+.app {
+  text-align: center;
+  width: max-content;
+}
+
+.recordForm * {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.recordList {
+  padding-top: 50px;
+}
+
+.recordElement .delBtn:hover {
+  cursor: pointer;
+  background-color: rgba(206, 253, 255, 0.89);
+}
+
+.recordLabel.checkedRecord {
+  text-decoration: line-through;
+}
