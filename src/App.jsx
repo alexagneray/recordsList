@@ -2,13 +2,16 @@ import { useState } from "react";
 // import reactLogo from "./assets/react.svg";
 // import viteLogo from "/vite.svg";
 import "./App.css";
+import { RecordForm } from "./RecordForm";
+import { RecordList } from "./RecordList";
+import { ListTools } from "./ListTools";
+import { Stats } from "./Stats";
 
 export default function App() {
   const [records, setRecords] = useState([]);
   const [sort, setSort] = useState("input");
 
   function handleSortChange(sort) {
-    console.log(sort);
     setSort(sort);
   }
   function handleAddRecord(artist, album) {
@@ -56,119 +59,6 @@ export default function App() {
       ) : null}
 
       <Stats records={records} />
-    </div>
-  );
-}
-
-function RecordForm({ onAddRecord }) {
-  const [artist, setArtist] = useState("");
-  const [album, setAlbum] = useState("");
-  return (
-    <form
-      className="recordForm"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onAddRecord(artist, album);
-        setArtist("");
-        setAlbum("");
-      }}
-    >
-      <span>Add a record you wanna get in the list ! 📀</span>
-      <span>Artist : </span>
-      <input
-        type="text"
-        value={artist}
-        onChange={(e) => setArtist(e.target.value)}
-      ></input>
-      <span>Album : </span>
-      <input
-        type="text"
-        value={album}
-        onChange={(e) => setAlbum(e.target.value)}
-      ></input>
-      <button type="submit">Add</button>
-    </form>
-  );
-}
-
-function RecordList({ records, onRemoveRecord, onCheckRecord, sort }) {
-  let sortRecords;
-
-  if (sort === "input") {
-    sortRecords = records.slice();
-  } else if (sort === "album") {
-    sortRecords = records
-      .slice()
-      .sort((a, b) => a.album.localeCompare(b.album));
-  } else if (sort === "check") {
-    sortRecords = records
-      .slice()
-      .sort((a, b) => Number(a.checked) - Number(b.checked));
-  }
-  return (
-    <div className="recordList">
-      {sortRecords.map((r) => (
-        <RecordElement
-          record={r}
-          key={r}
-          onRemoveRecord={onRemoveRecord}
-          onCheckRecord={onCheckRecord}
-        />
-      ))}
-    </div>
-  );
-}
-
-function RecordElement({ record, onRemoveRecord, onCheckRecord }) {
-  return (
-    <div className="recordElement" key={record.artist + record.album}>
-      <input
-        type="checkbox"
-        onChange={() => onCheckRecord(record.artist, record.album)}
-      ></input>
-      <span
-        className={record.checked ? "recordLabel checkedRecord" : "recordLabel"}
-      >
-        {record.artist} - {record.album}
-      </span>
-      <span
-        className="delBtn"
-        onClick={() => onRemoveRecord(record.artist, record.album)}
-      >
-        ❌
-      </span>
-    </div>
-  );
-}
-
-function ListTools({ onSortChange, onClear, sort }) {
-  return (
-    <div
-      className="listTools"
-      value={sort}
-      onChange={(e) => onSortChange(e.target.value)}
-    >
-      <select>
-        <option value="input">Sort by input</option>
-        <option value="album">Sort by album name</option>
-        <option value="check">Sort by check</option>
-      </select>
-      <button onClick={onClear}>Clear</button>
-    </div>
-  );
-}
-function Stats({ records }) {
-  const total = records.length;
-  const countChecked = records.filter((r) => r.checked).length;
-  const perc = (countChecked / total) * 100;
-
-  return (
-    <div className="stats">
-      <span>
-        {total
-          ? `You have bought ${countChecked} / ${total} of the records (${perc} %)`
-          : `The list is empty, add some records to buy ! :-)`}
-      </span>
     </div>
   );
 }
